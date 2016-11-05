@@ -1,6 +1,7 @@
 //统计一个字符串中 ’ * ‘ 的个数，同时将所有的‘ * ’
 //移动到字符串的前面，如果字符串中有空格，则删除所有的空格。 
 
+解法一
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -56,6 +57,8 @@ int main()
 	return 0;
 }
 
+
+解法二
 #include<iostream>
 #include<vector>
 
@@ -91,6 +94,7 @@ int main()
 }
 
 
+解法三
 #include<iostream>
 using namespace std;
 #include<string>
@@ -129,6 +133,7 @@ int main()
 //有一字符串，包含n个字符。写一函数，
 //将此字符串中从第m个字符开始的全部字符复制成为另一个字符串
 
+解法一
 #include<iostream>
 #include<string>
 
@@ -168,7 +173,7 @@ int main()
 }
 
 
-
+解法二
 #include<stdio.h>
 #include<stdlib.h>
  
@@ -198,4 +203,76 @@ int main()
  
         a(str);
         return 0;
+}
+
+/*输入一个正整数n (1≤ n ≤6),再输入一个n 行n列的矩阵，
+找出该矩阵中绝对值最大的元素以及它的行下标和列下标。*/
+
+#include<iostream>
+
+using namespace std;
+
+
+int main()
+{
+	int n = 0;
+	int** arr;
+	
+	cin>>n;
+
+	arr = new int* [n];
+	
+	for(size_t i = 0; i < n; i++)
+	{
+		arr[i] = new int[n];
+	}
+
+	int max = 0;
+	int row = 0;
+	int col = 0;
+
+	for(int i = 0; i < n; i++)
+	{
+		for(int j = 0; j < n; j++)
+		{
+			cin>>arr[i][j];
+			if(abs(arr[i][j]) > max)
+			{
+				max = arr[i][j];
+				row = i;
+				col = j;
+			}
+		}
+	}
+
+	cout<<max<<" "<<row<<" "<<col<<endl;
+
+	return 0;
+}
+
+
+输入两个正整数X,Y,求出[X,Y]内被除3余1并且被除5余3的整数的和
+
+#include<iostream>
+
+using namespace std;
+
+int main()
+{
+	int X = 0;
+	int Y = 0;
+	cin>>X;
+	cin>>Y;
+
+	int sum = 0;
+	for(size_t i = X; i <= Y; i++)
+	{
+		if(i%3 == 1 && i%5 == 3)
+			sum += i;
+	}
+
+	cout<<sum<<endl;
+
+	system("pause");
+	return 0;
 }
