@@ -1,0 +1,201 @@
+//统计一个字符串中 ’ * ‘ 的个数，同时将所有的‘ * ’
+//移动到字符串的前面，如果字符串中有空格，则删除所有的空格。 
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+void Func(char* arr)
+{
+	char* cur = arr;
+	char str[100] = {0};
+
+	int count = 0;
+	int i = 0;
+	int j = 0;
+	int size =0;
+
+	int len = strlen(arr);
+	size = len;
+	for(i = 0; i<len; i++)
+	{
+		if(arr[i] == ' ')
+			size--;
+
+		else if(arr[i] == '*')
+		{
+			count++;
+			str[j] = '*';
+		    j++;
+		}
+	}
+
+	while(*cur)
+	{
+		if(*cur != ' ' && *cur != '*')
+		{
+			str[size - j] = *cur;
+			j--;
+		}
+		cur++;
+	}
+
+	for(j = 0; j < strlen(str); j++)
+		printf("%c",str[j]);
+	printf("\n");
+	printf("%d\n",count);
+}
+
+int main()
+{
+	char arr[100] = {0};
+	scanf("%s",&arr);
+
+	Func(arr);
+	system("pause");
+	return 0;
+}
+
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+int main()
+{
+	vector<char> v;
+	vector<char> v2;
+
+	unsigned char ch = getchar();
+	while(ch != '\n' && ch != EOF)
+	{
+		if(ch == '*')
+			v.push_back(ch);
+		else if(ch != '*' && ch != ' ')
+			v2.push_back(ch);
+		ch = getchar();
+	}
+
+	cout<<v.size()<<endl;
+
+	for(int i = 0; i<v2.size(); i++)
+		v.push_back(v2[i]);
+
+	for(int i = 0; i < v.size(); i++)
+		cout<<v[i];
+
+	cout<<endl;
+
+	system("pause");
+	return 0;
+}
+
+
+#include<iostream>
+using namespace std;
+#include<string>
+
+void test()
+{
+	string str;
+	getline(cin,str);
+	string str2;
+	int count = 0;
+	for(int i = 0;i < str.size();i++)
+	{
+		if(str[i] != ' ')
+		{
+			if(str[i] == '*')
+				count++;
+			else
+				str2.push_back(str[i]);
+		}
+	}
+	int num = count;
+	while(count--)
+		str2.insert(0,"*");
+	
+	cout<<str2<<endl;
+	cout<<num<<endl;
+}
+int main()
+{
+	test();
+	return 0;
+}
+
+
+
+//有一字符串，包含n个字符。写一函数，
+//将此字符串中从第m个字符开始的全部字符复制成为另一个字符串
+
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+int n = 0;
+int m = 0;
+string str;
+
+void func()
+{
+	for(size_t i = m - 1; i < n; i++)
+		cout<<str[i];
+	cout<<endl;
+}
+
+
+int main()
+{
+	cin>>n;
+
+	unsigned char ch = getchar();
+	ch = getchar();
+
+	while(ch != '\n')
+	{
+		str.push_back(ch);
+		ch =getchar();
+	}
+
+	m = getchar() - '0';
+
+	func();
+
+	system("pause");
+	return 0;
+}
+
+
+
+#include<stdio.h>
+#include<stdlib.h>
+ 
+int n,m;
+char str[100],string[100];
+ 
+void a(char *str)  
+{                   
+        int t=0,i;
+        i=m-1;
+        str=str+i;
+        for(;i<n;i++)
+        {
+                string[t]=*str;
+                printf("%c",string[t]);
+                str++;
+                t++;
+        }
+}
+ 
+int main()
+{
+    
+        scanf("%d",&n);
+        scanf("%s",str);        
+        scanf("%d",&m);
+ 
+        a(str);
+        return 0;
+}
