@@ -1,0 +1,81 @@
+#include<iostream>
+#include<stack>
+
+// 用两个栈实现一个队列
+// 类似于两个队列实现一个栈，就主要体现出队列的“先进先出的”原则，即实现push和pop两个操作；
+using namespace std;
+
+template<typename T>
+class Queue
+{
+public:
+	//push的话就要充分利用栈的后进先出的原则了；
+	void Push(const T& data)
+	{
+		s1.push (data);//入栈直接放入s1;
+	}
+
+	void Pop()
+	{
+		//pop时就稍微有点技巧，如果s2不为空，则直接pops2,为什么呢？
+		//很简单，如果s2不为空，说明经过上次pop之后，剩余的s2并没有还给s1，那s2的栈顶元素是不是
+		//目前最先进入队列的元素！ 
+		/* 比如： 1，2，3，4入栈
+		s1: 1>2>3>4; 4是栈顶；然后执行Pop操作时；
+		s1: 1;//留下的最后一个元素就是最先入栈即最先入队列的元素；pop掉；
+		s2: 4>3>2;
+		执行完一次完整的Pop后：
+		s1:   //空的，_size = 0;
+		s2: 4>3>2 //2是栈顶
+		假设我们再push个5，6，7，则：
+		s1:5>6>7;
+		s2:4>3>2;  
+		接下来又要Pop； 按照队列先进先出的原则，我们应该pop掉入栈最早的元素，现在的话就是2了；
+		如果s2有元素的话肯定都比s1内的元素入栈早，这个没有问题吧！ 那么s2是s1倒过来的，那么栈顶
+		的元素肯定是最早入栈的；
+		那么，2现在就在s2的栈顶，直接pop掉就可以了；Pop操作后：
+		s1: 5>6>7;
+		s2: 4>3;
+		假设连续Pop两次之后：
+		s1:5>6>7;
+		s2:  //空；
+		现在又要Pop；那么我们判断s2为空了，那就又回到一开始的操作了！
+		*/
+		if(s2.size () > 0)
+		{
+			cout<<s2.top ()<<endl;
+			s2.pop ();
+		}
+		else
+		{
+			while(s1.size () > 1 )
+			{
+			s2.push (s1.top ());
+			s1.pop ();
+			}
+			cout<<s1.top ()<<endl;
+			s1.pop();
+		}
+	}
+
+private:
+	//两个栈成员
+	stack<T> s1;
+	stack<T> s2;
+};
+
+int main()
+{
+	Queue<int> q;
+
+	q.Push (1);
+	q.Push (2);
+	q.Pop ();
+	q.Pop ();
+	q.Push (3);
+	q.Push (4);
+	q.Pop ();
+
+	system("pause");
+	return 0;
+}
