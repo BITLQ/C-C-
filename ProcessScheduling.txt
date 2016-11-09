@@ -1,0 +1,227 @@
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+struct PCB
+{
+	int id;
+	int weight;
+	int dt;
+	int st;
+	int wt;
+	float zt;
+	float avzt;
+};
+
+
+void DisPlay(vector<PCB>& v)
+{
+	printf("进程号\t达到时间\t服务时间\t完成时间\t周转时间    平均周转时间\n");
+	for(int i = 0; i<v.size(); ++i)
+	{
+		printf("%5d\t%5d\t\t%5d\t\t%5d\t\t%4.2f\t\t%4.2f\n",v[i].id,v[i].dt,v[i].st,v[i].wt,v[i].zt,v[i].avzt);
+	}
+	
+	printf("\n\n");
+}
+
+void Sort(vector<PCB>& v)
+{
+	int size = v.size();
+	for(int i = 0; i< size - 1; ++i)
+	{
+		for(int j = 0; j<size - 1 - i; ++j)
+		{
+			if(v[j].dt > v[j+1].dt)
+			{
+				swap(v[j],v[j+1]);
+			}
+		}
+	}
+}
+
+void Fcfs(vector<PCB>& v)
+{
+	Sort(v);
+	int size = v.size();
+	for(int i = 0; i < size; ++i)
+	{
+		if(i == 0)
+			v[i].wt = v[i].st + v[i].dt;
+		else
+			v[i].wt = v[i - 1].wt + v[i].st;
+
+		v[i].zt = v[i].wt - v[i].dt;
+		v[i].avzt = v[i].zt/v[i].st;
+	}
+	DisPlay(v);
+}
+
+void Min(vector<PCB>& v,size_t start)
+{
+	int min = v[start].dt;
+	for(int i = start+1; i<v.size(); ++i)
+	{
+		if(v[i].dt<min)
+			swap(v[start],v[i]);
+	}
+}
+
+void SJF(vector<PCB>& v)
+{	
+	Min(v,0);
+
+	v[0].wt = v[0].dt + v[0].st;
+	v[0].zt = v[0].wt - v[0].dt;
+	v[0].avzt = v[0].zt/v[0].st;
+
+	int min = v[0].wt;
+
+	if(v.size() == 1)
+	{
+		DisPlay(v);
+		return;
+	}
+
+	for(int i = 1; i<v.size(); ++i)
+	{
+		Min(v,i);
+
+		int less = 0;
+		for(int j = i; j<v.size(); j++)
+		{
+			if(v[j].dt < min )
+			{
+				if(less == 0)
+				{
+					less = v[j].st;
+					swap(v[i],v[j]);
+				}
+				else if(v[j].st < less)
+				{
+					less = v[j].st;
+				    swap(v[i],v[j]);
+				}
+			}
+		}
+
+		v[i].wt = min + v[i].st;
+		v[i].zt = v[i].wt - v[i].dt;
+		v[i].avzt = v[i].zt/v[i].st;
+
+		min = v[i].wt;
+	}
+
+	DisPlay(v);
+}
+
+void P_weight(vector<PCB>& v)
+{
+	int size = v.size();
+	Sort(v);
+
+	int i = 0;
+	v[i].wt = v[i].st+v[i].dt;
+	v[i].zt = v[i].wt - v[i].dt;
+	v[i].avzt = v[i].zt/v[i].st;
+
+	if(v.size() == 1)
+	{
+		DisPlay(v);
+		return;
+	}
+
+	int min = v[i].wt;
+	for(i = 1; i < v.size(); ++i)
+	{
+		for(int m = i; m < v.size(); ++m)
+		{
+			if(v[m].dt < v[i].dt)
+			swap(v[m],v[i]);
+		}
+
+		int max = 0;
+		for(int j = i; j<v.size(); ++j)
+		{
+			if(v[j].dt <= min )
+			{
+				if(max == 0)
+				{
+					max = v[j].weight;
+					swap(v[i],v[j]);
+				}
+				else if(v[j].weight > max)
+				{
+					max = v[j].weight;
+				    swap(v[i],v[j]);
+				}
+			}
+		}
+		
+
+
+		v[i].wt = v[i - 1].wt + v[i].st;
+		v[i].zt = v[i].wt - v[i].dt;
+		v[i].avzt = v[i].zt/v[i].st;
+
+		min = v[i].wt;
+	}
+	DisPlay(v);
+}
+
+int main()
+{
+	PCB p;  
+	vector<PCB> v;
+	int num = 0;  //进程数
+	int id = 1;   //id号
+	printf("请输入有几个进程：\n");
+	cin>>num;
+
+
+	while(num--)
+	{
+		p.id = id;
+		printf("请依次输入进程%d的到达时间--服务时间--优先权值：\n", id);
+		cin>>p.dt>>p.st>>p.weight;
+
+		p.avzt = 0;
+		p.wt = 0;
+		p.zt = 0;
+
+		v.push_back(p);
+		id++;
+	}
+
+
+	vector<PCB> tmp(v);
+
+	while(1)
+	{
+		printf("请选择调度算法：\n先来先服务：1\n短作业优先：2\n优先权：3\n退出： 0\n");
+	    cin>>num;
+
+		switch(num)
+		{
+		case 0:
+			exit(0);
+		    break;
+	   case 1:
+		    Fcfs(tmp);
+		    break;
+	   case 2:
+		    SJF(tmp);
+		    break;
+	   case 3:
+		    P_weight(tmp);
+		    break;
+	   default:
+		    printf("选项有误\n");
+		    break;
+	}
+
+	}
+	system("pause");
+	return 0;
+}
