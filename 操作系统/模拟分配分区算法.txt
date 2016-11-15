@@ -1,519 +1,256 @@
-//首度适应算法
-//循环首次适应算法
-//最佳适应算法
-//最坏适应算法
-
-
 #include<iostream>
-#include<list>
+#include<algorithm>
 #include<vector>
-
 using namespace std;
-
 struct MemNode
 {
-	int _start;
-	int _end;
-
-	int _size;
-	int _flag;
-
+	int _start;int _end;int _size;int _flag;
 	MemNode(int start = 0,int end = 0,int size = 0,int flag = 0)
-		:_start(start)
-		,_end(end)
-		,_size(size)
-		,_flag(flag)
-	{}
+		:_start(start),_end(end),_size(size),_flag(flag){}
 };
-
-
-//首度适应算法是以地址递增的序列连接
-class FirstFit
+vector<MemNode> v;
+inline void NewV(void)
 {
-	vector<MemNode> _v;
-public:
-
-	FirstFit()
-	{
-		MemNode begin(0,500,500);
-		_v.push_back(begin);
-	}
-
-	bool Apply(int size)
-	{
-		for(int i = 0; i<_v.size(); ++i)
-		{
-			if(_v[i]._size >= size && _v[i]._flag == 0)
-			{
-				MemNode newNode(_v[i]._start,_v[i]._start + size,size,1);
-				_v.push_back(newNode);
-
-				_v[i]._start += size;
-				_v[i]._size -= size;
-
-				if(_v[i]._start == _v[i]._end)
-					_v.erase(_v.begin() + i);
-
-				cout<<_v[i]._start<<endl;
-				_Sort();
-				cout<<_v[i]._start<<endl;
-				cout<<"OK"<<endl;
-				return true;
-			}
-		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-	bool Free(int start)
-	{
-		for(int i = 0; i < _v.size(); ++i)
-		{
-			if(_v[i]._flag == 1 && _v[i]._start == start)
-			{
-				_v[i]._flag = 0;
-
-				if(i<_v.size()-1 && _v[i+1]._flag == 0)
-				{
-					_v[i]._end = _v[i+1]._end;
-					_v[i]._size += _v[i+1]._size;
-					_v.erase(_v.begin()+i+1);
-				}
-
-				if(i < 0 && _v[i - 1]._flag == 0)
-				{
-					_v[i-1]._end = _v[i]._end;
-					_v[i-1]._size += _v[i]._size;
-					_v.erase(_v.begin()+i);
-				}
-
-				_Sort();
-				cout<<"yes"<<endl;
-				return true;
-			}
-		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-protected:
-
-	void _Sort()
-	{
-		for(int i = 0; i < _v.size() - 1;++i)
-		{
-			for(int j = 0; j < _v.size() -i - 1; ++j )
-			{
-				if(_v[j]._start > _v[j+1]._start)
-					swap(_v[j],_v[j+1]);
-			}
-		}
-	}
-};
-
-
-//循环首度适应算法
-class nextfit
+	MemNode begin(0,500,500);
+	v.push_back(begin);
+}
+//打印已经申请的空间
+void DisPlay(vector<MemNode> _v)
 {
-	vector<MemNode> _v;
-	static int staticstart;
-public:
-
-	nextfit()
+	int i = 0;
+	while(i<_v.size())
 	{
-		MemNode begin(0,500,500);
-		_v.push_back(begin);
-	}
+		if(_v[i]._flag==1)
+			cout<<"*"<<_v[i]._start<<"->"<<_v[i]._end<<"*";
+		i++;
+	}cout<<endl;
+}
+//比较函数
+bool DressSort(MemNode v1, MemNode v2){return v1._start<v2._start;}
+bool BestSort(MemNode v1, MemNode v2){return v1._size<v2._size;}
+bool WorseSort(MemNode v1, MemNode v2){return v1._size>v2._size;}
+//新节点
+int NewNode(vector<MemNode>& _v,const int size,const int i)
+{
+	MemNode newNode(_v[i]._start,_v[i]._start + size,size,1);
+	_v.push_back(newNode);
 	
+	_v[i]._start += size;
+	_v[i]._size -= size;
 
-	bool Apply(int size)
-	{
-		int i = 0;
-		while( _v[i]._start != nextfit::staticstart)
-			i++;
-		int count = 0;
+	if(_v[i]._start == _v[i]._end)
+		_v.erase(_v.begin() + i);
+	cout<<"申请到的空间为："<<newNode._start<<"--"<<newNode._end<<endl;
+	return newNode._end;
+}
+//通用的回收函数
+int Free(vector<MemNode>& _v,int i, int start,int staticstart = 0 )
+{
+		_v[i]._flag = 0;
 
-		while(count != _v.size())
+		if(i<_v.size()-1 && _v[i+1]._flag == 0)
 		{
-			if(_v[i]._size >= size && _v[i]._flag == 0)
-			{
-				MemNode newNode(_v[i]._start,_v[i]._start + size,size,1);
-				_v.push_back(newNode);
+			if(_v[i+1]._start == staticstart)
+				staticstart = _v[i]._start;
 
-				_v[i]._start += size;
-				_v[i]._size -= size;
+			_v[i]._end = _v[i+1]._end;
+			_v[i]._size += _v[i+1]._size;
+			_v.erase(_v.begin()+i+1);
+		}
+		if(i < 0 && _v[i - 1]._flag == 0)
+		{
+			if(_v[i-1]._start == staticstart)
+			staticstart = _v[i]._start;
 				
-				if(_v[i]._start == _v[i]._end)
-					_v.erase(_v.begin() + i);
-
-				//存储下一个空闲分区的位置；
-				nextfit::staticstart = newNode._end;
-
-				_Sort();
-
-				cout<<"OK"<<endl;
-				return true;
-			}
-
-			i++;
-			count++;
-		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-	bool Free(int start)
-	{
-		for(int i = 0; i < _v.size(); ++i)
-		{
-			if(_v[i]._flag == 1 && _v[i]._start == start)
-			{
-				_v[i]._flag = 0;
-
-				if(i<_v.size()-1 && _v[i+1]._flag == 0)
-				{
-					if(_v[i+1]._start == staticstart)
-						staticstart = _v[i]._start;
-
-					_v[i]._end = _v[i+1]._end;
-					_v[i]._size += _v[i+1]._size;
-					_v.erase(_v.begin()+i+1);
-				}
-
-				if(i < 0 && _v[i - 1]._flag == 0)
-				{
-					if(_v[i-1]._start == staticstart)
-						staticstart = _v[i]._start;
-
-					_v[i-1]._end = _v[i]._end;
-					_v[i-1]._size += _v[i]._size;
-					_v.erase(_v.begin()+i);
-				}
-				_Sort();
-				cout<<"yes"<<endl;
-				return true;
-			}
-		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-protected:
-
-	void _Sort()
-	{
-		for(int i = 0; i < _v.size() - 1;++i)
-		{
-			for(int j = 0; j < _v.size() -i - 1; ++j )
-			{
-				if(_v[j]._start > _v[j+1]._start)
-					swap(_v[j],_v[j+1]);
-			}
-		}
-	}
-};
-
-int nextfit::staticstart = 0;
-
-//最佳适应算法
-//按照空间的大小的递增进行排序；
-class bestfit
+			_v[i-1]._end = _v[i]._end;
+			_v[i-1]._size += _v[i]._size;
+			_v.erase(_v.begin()+i);
+		}return staticstart;
+}
+//申请
+void Apply(vector<MemNode>& _v,int size)
 {
-		vector<MemNode> _v;
-public:
-
-	bestfit()
+	for(int i = 0; i<_v.size(); ++i)
 	{
-		MemNode begin(0,500,500);
-		_v.push_back(begin);
-	}
-
-	bool Apply(int size)
-	{
-		for(int i = 0; i<_v.size(); ++i)
+		if(_v[i]._size >= size && _v[i]._flag == 0)
 		{
-			if(_v[i]._size >= size && _v[i]._flag == 0)
-			{
-				MemNode newNode(_v[i]._start,_v[i]._start + size,size,1);
-				_v.push_back(newNode);
-
-				_v[i]._start += size;
-				_v[i]._size -= size;
-
-				if(_v[i]._start == _v[i]._end)
-					_v.erase(_v.begin() + i);
-
-				cout<<_v[i]._start<<endl;
-				_Sort();
-				cout<<_v[i]._start<<endl;
-				cout<<"OK"<<endl;
-				return true;
-			}
+			NewNode(_v,size,i);
+			sort(_v.begin(),_v.end(),DressSort);return;
 		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-	bool Free(int start)
-	{
-		for(int i = 0; i < _v.size(); ++i)
-		{
-			if(_v[i]._flag == 1 && _v[i]._start == start)
-			{
-				_v[i]._flag = 0;
-
-				if(i<_v.size()-1 && _v[i+1]._flag == 0)
-				{
-					_v[i]._end = _v[i+1]._end;
-					_v[i]._size += _v[i+1]._size;
-					_v.erase(_v.begin()+i+1);
-				}
-
-				if(i < 0 && _v[i - 1]._flag == 0)
-				{
-					_v[i-1]._end = _v[i]._end;
-					_v[i-1]._size += _v[i]._size;
-					_v.erase(_v.begin()+i);
-				}
-				_Sort();
-				cout<<"yes"<<endl;
-				return true;
-			}
-		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-protected:
-
-	void _Sort()
-	{
-		for(int i = 0; i < _v.size() - 1;++i)
-		{
-			for(int j = 0; j < _v.size() -i - 1; ++j )
-			{
-				if(_v[j]._size > _v[j+1]._size)
-					swap(_v[j],_v[j+1]);
-			}
-		}
-	}
-};
-
-
-class worsefit
+	}cout<<"申请失败"<<endl;
+}
+void DressFree(vector<MemNode>& _v,int start)
 {
-			vector<MemNode> _v;
-public:
-
-	worsefit()
+	for(int i = 0; i < _v.size(); ++i)
 	{
-		MemNode begin(0,500,500);
-		_v.push_back(begin);
-	}
-
-	bool Apply(int size)
-	{
-		for(int i = 0; i<_v.size(); ++i)
+		if(_v[i]._flag == 1 && _v[i]._start == start)
 		{
-			if(_v[i]._size >= size && _v[i]._flag == 0)
-			{
-				MemNode newNode(_v[i]._start,_v[i]._start + size,size,1);
-				_v.push_back(newNode);
-
-				_v[i]._start += size;
-				_v[i]._size -= size;
-
-				if(_v[i]._start == _v[i]._end)
-					_v.erase(_v.begin() + i);
-
-				_Sort();
-				cout<<"OK"<<endl;
-				return true;
-			}
+			Free(_v,i,start);
+			sort(_v.begin(),_v.end(),DressSort);
+			cout<<"回收成功"<<endl;return;
 		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-	bool Free(int start)
+	}cout<<"回收失败"<<endl;
+}
+//循环首度适应算法
+void CApply(vector<MemNode>& _v,int size,int& staticstart)
+{
+	int i = 0;
+	while( _v[i]._start != staticstart)i++;
+	int count = 0;
+	while(count != _v.size())
 	{
-		for(int i = 0; i < _v.size(); ++i)
+		if(_v[i]._size >= size && _v[i]._flag == 0)
+		{
+			staticstart = NewNode(_v,size,i);	
+			sort(_v.begin(),_v.end(),DressSort);
+			return;
+		}
+		if(i = _v.size() - 1)
+			i = -1;
+		i++;count++;
+	}
+	cout<<"申请失败"<<endl;
+}
+void CFree(vector<MemNode>& _v,int start,int& staticstart)
+{
+	for(int i = 0; i < _v.size(); ++i)
+	{
+		if(_v[i]._flag == 1 && _v[i]._start == start)
+		{
+			staticstart = Free(_v,i,start,staticstart);
+			sort(_v.begin(),_v.end(),DressSort);
+			cout<<"回收成功"<<endl;return;
+		}
+	}cout<<"回收失败"<<endl;
+}
+void BestFree(vector<MemNode>& _v,int start)
+{
+	for(int i = 0; i < _v.size(); ++i)
+	{
+		if(_v[i]._flag == 1 && _v[i]._start == start)
+		{
+			Free(_v,i,start);
+			sort(_v.begin(),_v.end(),BestSort);
+			cout<<"回收成功"<<endl;return;
+		}
+	}cout<<"回收失败"<<endl;
+}
+void WorseFree(vector<MemNode>& _v,int start)
+{
+	for(int i = 0; i < _v.size(); ++i)
 		{
 			if(_v[i]._flag == 1 && _v[i]._start == start)
 			{
-				_v[i]._flag = 0;
-
-				if(i<_v.size()-1 && _v[i+1]._flag == 0)
-				{
-					_v[i]._end = _v[i+1]._end;
-					_v[i]._size += _v[i+1]._size;
-					_v.erase(_v.begin()+i+1);
-				}
-
-				if(i < 0 && _v[i - 1]._flag == 0)
-				{
-					_v[i-1]._end = _v[i]._end;
-					_v[i-1]._size += _v[i]._size;
-					_v.erase(_v.begin()+i);
-				}
-				_Sort();
-				cout<<"yes"<<endl;
-				return true;
+				Free(_v,i,start);
+				sort(_v.begin(),_v.end(),WorseSort);
+				cout<<"回收成功"<<endl;return;
 			}
-		}
-		cout<<"no"<<endl;
-		return false;
-	}
-
-protected:
-
-	void _Sort()
-	{
-		for(int i = 0; i < _v.size() - 1;++i)
-		{
-			for(int j = 0; j < _v.size() -i - 1; ++j )
-			{
-				if(_v[j]._size < _v[j+1]._size)
-					swap(_v[j],_v[j+1]);
-			}
-		}
-	}
-};
-
+		}cout<<"回收失败"<<endl;
+}
+int choose = 0;
+int size = 0;
+int start = 0;
 
 void FiFit()
 {
-	FirstFit f;
-
-	int choose = 0;
+	NewV();
 	while(1)
-	{
-		int size = 0;
-		int start = 0;
-
-		cout<<"选择开辟/释放"<<endl;
+	{	
+		cout<<"选择申请(1)/回收(2)/返回(0)"<<endl;
 		cin>>choose;
-
 		switch(choose)
-		{
-		case 1:
-			printf("输入开辟空间大小：\n");
-			
+		{case 1:
+			printf("输入申请空间大小(0-500)：\n");
 			cin>>size;
-			f.Apply(size);
-			break;
+			Apply(v,size);break;
 		case 2:
-			printf("输入删除空间首地址:\n");
-			
+			cout<<"目前已申请空间为："<<endl;
+			DisPlay(v);
+			printf("输入回收空间首地址(0-500):\n");
 			cin>>start;
-			f.Free(start);
-			break;
-		default:
-			return;
-		}
+			DressFree(v,start);break;
+		default:return;}
 	}
-
-	f.Apply(200);
-	f.Apply(20);
-	f.Apply(100);
-	f.Free(220);
-	f.Free(320);
-	f.Apply(230);
 }
-
-
 void NextFit()
 {
-	nextfit n;
-
-	n.Apply(200);
-	n.Apply(20);
-	n.Free(0);
-	n.Apply(100);
-	n.Free(220);
-	n.Apply(230);
-
-	/*int choose = 0;
+	NewV();
+	int staticstart = 0;
 	while(1)
 	{
-		int size = 0;
-		int start = 0;
-
-		cout<<"选择开辟/释放"<<endl;
+		cout<<"选择申请(1)/回收(2)/返回(0)"<<endl;
 		cin>>choose;
-
 		switch(choose)
-		{
-		case 1:
-			printf("输入开辟空间大小：\n");
-			
+		{case 1:
+			printf("输入申请空间大小(0-500)：\n");
 			cin>>size;
-			n.Apply(size);
-			break;
+			CApply(v,size,staticstart);break;
 		case 2:
-			printf("输入删除空间首地址:\n");
-			
+			cout<<"目前已申请空间为："<<endl;
+			DisPlay(v);
+			printf("输入回收空间首地址(0-500):\n");
 			cin>>start;
-			n.Free(start);
-			break;
-		default:
-			return;
-		}
-	}*/
+			CFree(v,start,staticstart);break;
+		default:return;}
+	}
 }
-
 void BestFit()
 {
-	bestfit b;
-	b.Apply(300);
-	b.Apply(20);
-	b.Free(0);
-	b.Apply(100);
-	b.Free(220);
-	b.Apply(230);
+	NewV();
+	while(1)
+	{
+		cout<<"选择申请(1)/回收(2)/返回(0)"<<endl;
+		cin>>choose;
+		switch(choose)
+		{case 1:
+			printf("输入申请空间大小(0-500)：\n");
+			cin>>size;
+			Apply(v,size);break;
+		case 2:
+			cout<<"目前已申请空间为："<<endl;
+			DisPlay(v);
+			printf("输入回收空间首地址(0-500):\n");
+			cin>>start;
+			BestFree(v,start);break;
+		default:return;}
+	}
 }
-
 void WorseFit()
 {
-	worsefit w;
-	w.Apply(200);
-	w.Apply(20);
-	w.Free(0);
-	w.Apply(100);
-	w.Free(220);
-	w.Apply(230);
+	NewV();
+	while(1)
+	{	
+		cout<<"选择申请(1)/回收(2)/返回(0)"<<endl;
+		cin>>choose;
+		switch(choose)
+		{case 1:
+			printf("输入申请空间大小(0-500)：\n");
+			cin>>size;
+			Apply(v,size);break;
+		case 2:
+			cout<<"目前已申请空间为："<<endl;
+			DisPlay(v);
+			printf("输入回收空间首地址(0-500):\n");
+			cin>>start;
+			WorseFree(v,start);break;
+		default:return;}
+	}
 }
-
 int main()
 {
-	int select = 0;
-	//DisPlay();
-
 	while(1)
 	{
 		cout<<"选择算法"<<endl;
-		cin>>select;
-		switch(select)
-		{	
-		case 1:
-			FiFit();
-			break;
-		case 2:
-			NextFit();
-			break;
-		case 3:
-			BestFit();
-			break;
-		case 4:
-			WorseFit();
-			break;
-		default:
-			exit(0);
-			break;
-		}
+		printf("1:首都适应\n2:循环首度适应\n3:最佳适应\n4:最坏适应\n0:退出\n");
+		cin>>choose;
+		switch(choose){	
+		case 1:FiFit();break;
+		case 2:NextFit();break;
+		case 3:BestFit();break;
+		case 4:WorseFit();break;
+		default:exit(0);break;}
+		v.clear();
 	}
-
-
 	system("pause");
 	return 0;
 }
