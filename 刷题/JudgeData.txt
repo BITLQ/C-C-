@@ -1,0 +1,79 @@
+//输出一个日期是一年中的第几天
+//code = C++
+
+//#include<iostream>
+//#include<string>
+//#include<vector>
+//
+//using namespace std;
+//
+//
+//int main()
+//{
+//
+//	int months[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+//	string s;
+//	vector<int> c;
+//
+//	char ch = getchar();
+//	while(!feof(stdin))
+//	{
+//		if(ch == '\n')
+//		{
+//			string arr;
+//			int i  = 0;
+//			
+//			/*if(s.size() == 0)
+//				break;*/
+//
+//			while(s[i] != '/')
+//				arr.push_back(s[i++]);
+//
+//			int year = atoi(arr.c_str());
+//			arr.clear();
+//
+//			i++;
+//			while(s[i] != '/')
+//				arr.push_back(s[i++]);
+//
+//			int month = atoi(arr.c_str());
+//			arr.clear();
+//
+//			i++;
+//			while(i<s.size())
+//				arr.push_back(s[i++]);
+//
+//			int day = atoi(arr.c_str());
+//
+//			if((year%4 == 0 && year%100 != 100) || year%200 == 0)
+//				months[2] = 29;
+//			else
+//				months[2] = 28;
+//
+//			int sum = 0;
+//
+//			for(int i = 0; i<month; ++i)
+//			{
+//				sum+=months[i];
+//			}
+//
+//			sum+=day;
+//
+//			c.push_back(sum);
+//
+//			s.clear();
+//		}
+//		else
+//		  s.push_back(ch);
+//
+//		 ch = getchar();
+//	}
+//
+//	for(int i = 0; i < c.size(); ++i)
+//		cout<<c[i]<<endl;
+//
+//
+//	system("pause");
+//	return 0;
+//}
+//
