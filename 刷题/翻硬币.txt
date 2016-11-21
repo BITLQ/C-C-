@@ -1,0 +1,43 @@
+//·­Ó²±Ò
+#include<iostream>
+#include<string>
+#include<vector>
+
+using namespace std;
+
+
+int main()
+{
+	
+	char arr[100];
+	char str[100];
+
+	gets(arr);
+	gets(str);
+
+	string s1(arr);
+	string s2(str);
+
+	vector<int> v;
+
+	for(int i = 0; i<s1.size(); ++i)
+	{
+		if(s1[i] != s2[i])
+			v.push_back(i);
+	}
+
+	if(v.size() == 0)
+	{
+		cout<<"0"<<endl;
+	    return 0;
+	}
+	if(v[0]+1 == v[1])
+	{
+		cout<<"1"<<endl;
+	}
+	else
+		cout<<v[1]<<endl;
+
+	system("pause");
+	return 0;
+}
