@@ -1,0 +1,25 @@
+//Æ¡¾ÆÊý
+//#include<iostream>
+//
+//using namespace std;
+//
+//int main()
+//{
+//	int i = 0;
+//	int j = 1;
+//
+//
+//	for(int i = 0; i < 42; ++i)
+//	{
+//		for(int j = 0; j<42; ++j)
+//		{
+//			if(2.3*j + 1.9*i == 82.3 && j<i)
+//			{
+//				cout<< j;
+//				break;
+//			}
+//		}
+//	}
+//	system("pause");
+//	return 0;
+//}
