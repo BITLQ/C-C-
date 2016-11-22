@@ -1,0 +1,34 @@
+°¢¶û·¨
+//#include<iostream>
+//#include<string>
+//
+//using namespace std;
+//
+//int Arf(size_t s)
+//{
+//	while(s/10 != 0)
+//	{
+//		size_t num = 1;
+//		while(s != 0)
+//		{
+//			if(s%10 != 0)
+//			   num *= s%10;
+//			s /= 10;
+//		}
+//
+//		s = num;
+//	}
+//
+//	return s;
+//}
+//
+//int main()
+//{
+//	size_t s;
+//
+//	cin>>s;
+//
+//	cout<<Arf(s)<<endl;
+//	system("pause");
+//	return 0;
+//}
