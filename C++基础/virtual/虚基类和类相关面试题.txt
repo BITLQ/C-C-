@@ -1,0 +1,266 @@
+#include<iostream>
+
+using namespace std;
+
+//实现一个不能被继承的类
+//class A
+//{
+//	A(){}
+//	~A(){}
+//	friend class B;
+//};
+//
+////class B:virtual public A
+//class B:public A 
+//{
+//public:
+//	B(){cout<<"B()"<<endl;}
+//	~B(){}
+//};
+//
+//class C: public B
+//{
+//public:
+//	C(){} //B虚继承A时 error
+//};
+//
+//
+//int main()
+//{
+//	C c;
+//
+//	system("pause");
+//	return 0;
+//}
+
+//关于虚基类大小的问题
+
+//情景
+//class A
+//{
+//	int a;
+//public:
+//	A():a(1){cout<<"A()"<<endl;}
+//	
+//	// void func();
+//	virtual void func()
+//	{cout<<"A"<<endl;}
+//	//int x;
+//};
+//
+////class B:public A
+//class B: virtual public A
+//{
+//	int b;
+//public:
+//	B():b(2){cout<<"B()"<<endl;}
+//	//虚继承在B构造之前已经构造好了A，如果没有显示调用A的构造函数，编译器会自动调用；
+//	//子类中都会产生一个指向虚基类的vptr，偏移指针；
+//	virtual void func()
+//	{cout<<"B"<<endl;}
+//	 //void foo();
+//};
+//
+//int main()
+//{
+//	//A a;
+//	B b;
+//	//???为什么内存中会多出一个空指针？？？
+//	A* x = &b;
+//	//x->func();
+//
+//
+//	cout<<sizeof(A)<<endl;
+//	cout<<sizeof(B)<<endl;
+//	system("pause");
+//	return 0;
+//}
+
+//实现一个只能在堆上创建对象的类
+//只能在堆上，那么只需要让析构函数为私有的，那么编译器检查析构函数的时候就会发现不能
+//自动释放空间，而达到不能在栈上生成对象的类；
+
+//class Demo
+//{
+//	~Demo(){}
+//	int a;
+//public:
+//	Demo(){}
+//};
+
+//int main()
+//{
+//	//Demo d;    //error
+//	//Demo* d = new Demo();
+//
+//	//cout<<sizeof(A)<<endl;
+//	//cout<<sizeof(B)<<endl;
+//
+//
+//	system("pause");
+//	return 0;
+//}
+
+//实现一个只能在栈上生成对象的类；
+
+//方式一
+//重写operator new()和operator delete(); 设为私有
+//如果有必要还需要重写 operator new[]() && operator delete[]();
+
+//class Demo
+//{
+//	static void* operator new(size_t size);
+//	static void operator delete(void* ptr);
+//public:
+//	Demo(){}
+//	~Demo(){}
+//};
+//
+//
+//int main()
+//{
+//	//Demo d;
+//	Demo*  d= new Demo();//error
+//	system("pause");
+//	return 0;
+//}
+//方式二
+//另外一种方法就是将构造函数设置为私有的，但是这样的话，在栈上也不能生成对象了，需要
+//用到静态成员函数来帮助返回创建对象
+
+
+//class Demo
+//{
+//
+//private:
+//	Demo(){}
+//public:
+//	static Demo GetDemo()
+//	{
+//		return Demo();
+//	}
+//	~Demo(){}
+//};
+//
+//Demo d;
+//
+//int main()
+//{
+//	Demo d = Demo::GetDemo();//不能像正常的类 Demo d 这样使用；
+//	//Demo*  d= new Demo();//error
+//	system("pause");
+//	return 0;
+//}
+
+
+//析构函数声明为虚函数
+//class B
+//{
+//public:
+//	B(){cout<<"B()"<<endl;}
+//	virtual ~B(){cout<<"~B()"<<endl;}
+//};
+//
+//class D: public B
+//{
+//public:
+//	D(){cout<<"D()"<<endl;}
+//	virtual ~D(){cout<<"~D()"<<endl;}
+//};
+//
+//void test()
+//{
+//	B b;
+//	D d;
+//
+//	B* ptr = new D();
+//	delete ptr;
+//}
+//
+//int main()
+//{
+//	test();
+//
+//	system("pause");
+//	return 0;
+//}
+
+//菱形继承的内存布局
+//class B
+//{
+//	int b;
+//public:
+//	B():b(1){cout<<"B()"<<endl;}
+//	virtual ~B(){cout<<"~B()"<<endl;}
+//};
+//
+//class C: virtual public B
+//{
+//	int c;
+//public:
+//	C():c(2){cout<<"C()"<<endl;}
+//	virtual ~C(){cout<<"~C()"<<endl;}
+//};
+//
+//class D: virtual public B
+//{
+//	int d;
+//public:
+//	D():d(3){cout<<"D()"<<endl;}
+//	virtual ~D(){cout<<"~D()"<<endl;}
+//};
+//
+//class A:public D,public C
+//{
+//	int a;
+//public:
+//	A():a(4){cout<<"A()"<<endl;}
+//	virtual ~A(){cout<<"~A()"<<endl;}
+//};
+//int main()
+//{
+//	A a;
+//
+//	system("pause");
+//	return 0;
+//}
+
+#include<iostream>
+
+using namespace std;
+
+class A
+{
+	int a;
+public:
+	A():a(1){cout<<"A()"<<endl;}
+	
+	virtual void func()
+	{cout<<"A"<<endl;}
+};
+
+class B: virtual public A
+{
+	int b;
+public:
+	B():b(2){cout<<"B()"<<endl;}
+
+	virtual void func()
+	{cout<<"B"<<endl;}
+};
+
+int main()
+{
+
+	B b;
+	//???为什么内存中会多出一个空指针？？？
+	//看内存时的&b并不是b的虚表指针
+	A* x = &b;
+	//x->func();
+
+
+	cout<<sizeof(A)<<endl;
+	cout<<sizeof(B)<<endl;
+	system("pause");
+	return 0;
+}
